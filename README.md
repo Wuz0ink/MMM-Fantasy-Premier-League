@@ -28,8 +28,6 @@ Add the following configuration block to the modules array in the `config/config
     position: 'left',
     header: "Fantasy Premier League",
     config: {
-        password: '<YOUR_PASSWORD>',
-        username: '<YOUR_USERNAME>',
      //   leagueIds: [
      //   ],
     }
@@ -61,8 +59,6 @@ Example config:
     position: 'left',
     header: "Fantasy Premier League",
     config: {
-        password: '<YOUR_PASSWORD>',
-        username: '<YOUR_USERNAME>',
         leagueIds: [
             {id: 313},
         //  {id: {Another Id}},
@@ -76,8 +72,6 @@ Example config:
 
 | Option           | Default   | Description
 |------------------|-----------|-----------------------------------------
-| `password`       |           | *Not Optional* Password
-| `username`       |           | *Not Optional* Username or email
 | `leagueIds`      |           | *Optional* List of league ids
 | `updateInterval` |  21600000 | *Optional* How often should the module fetch?
 | `maxTeams`       |  10       | *Optional* How many teams should max be viewed in every league?
