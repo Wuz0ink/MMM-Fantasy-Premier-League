@@ -10,8 +10,6 @@
 
 Module.register("MMM-Fantasy-Premier-League", {
 	defaults: {
-		password: '',
-		username: '',
 		updateInterval: 21600000, // Every 6 hours
 		leagueIds: [
 			{id: 313}, // Overall
