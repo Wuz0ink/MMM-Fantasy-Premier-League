@@ -8,6 +8,7 @@
 var NodeHelper = require("node_helper");
 const fetch = require("node-fetch");
 
+
 module.exports = NodeHelper.create({
 
 	start: function() {
@@ -21,13 +22,62 @@ module.exports = NodeHelper.create({
 			console.log("Working notification system. Notification:", notification, "payload: ", payload);
 			this.config = payload;
 			this.started = true;
-			this.getData();
+			this.login();
+
+			//this.getData();
 		}
 	},
 
-	getData: function() {
+
+	login: function(){
 		var self = this;
 
+		console.log('Fetching accesstoken!');
+
+		var url = 'https://users.premierleague.com/accounts/login/';
+		var params = "password=" + this.password + "&login=" + this.username + "&redirect_uri=https://fantasy.premierleague.com/a/login&app=plfpl-web"
+
+		fetch(url, {
+			method: 'post',
+			credentials:'include',
+			body: params,
+		    headers: {
+		        "Content-Type": "application/x-www-form-urlencoded",
+		    },
+		}).then(function(response){
+			return response.headers.raw()['Set-Cookie'];
+		}).then(function(response){
+			self.getleagueData();
+		}).catch(function(err){
+			console.log(self.name + " : login : " + err);
+			self.scheduleUpdate();
+		});
+
+
+	},
+
+	logout: function(){
+
+		console.log('Logout');
+		var self = this;
+
+
+		var url = 'https://users.premierleague.com/accounts/logout/?app=plfpl-web&redirect_uri=https://fantasy.premierleague.com/';
+
+		fetch(url)
+				.then(function(response){
+					console.log('Logout response code: ' + response.status);
+					return response;
+				}).then(function(response){
+						self.login();
+				}).catch(function(err){
+					console.log(self.name + " : logout : " + err);
+					self.scheduleUpdate();
+				});
+	},
+
+	getleagueData: function() {
+		var self = this;
 
 		console.log('Fetching league data for module: ' + this.name);
 		//Clearing league list
@@ -50,6 +100,7 @@ module.exports = NodeHelper.create({
 				var jsonObj = JSON.parse(response.body);
 				self.processLeague(jsonObj);
 			});
+
 		}
 	},
 
@@ -106,6 +157,7 @@ module.exports = NodeHelper.create({
 
 	displayAndSchedule: function(notification, payload){
 
+
 		if(notification == "league" && payload.length > 0){
 			this.sendSocketNotification("MMM-Fantasy-Premier-League-LEAGUE", payload);
 		}
@@ -119,7 +171,7 @@ module.exports = NodeHelper.create({
 
 		clearTimeout(this.updateTimer);
 		this.updateTimer = setTimeout(function() {
-			self.getData();
+			self.login();
 		}, nextLoad);
 	}
 });
