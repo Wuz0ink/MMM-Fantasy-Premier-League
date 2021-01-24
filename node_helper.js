@@ -22,61 +22,12 @@ module.exports = NodeHelper.create({
 			console.log("Working notification system. Notification:", notification, "payload: ", payload);
 			this.config = payload;
 			this.started = true;
-			this.login();
+			this.getData();
 
-			//this.getData();
 		}
 	},
 
-
-	login: function(){
-		var self = this;
-
-		console.log('Fetching accesstoken!');
-
-		var url = 'https://users.premierleague.com/accounts/login/';
-		var params = "password=" + this.password + "&login=" + this.username + "&redirect_uri=https://fantasy.premierleague.com/a/login&app=plfpl-web"
-
-		fetch(url, {
-			method: 'post',
-			credentials:'include',
-			body: params,
-		    headers: {
-		        "Content-Type": "application/x-www-form-urlencoded",
-		    },
-		}).then(function(response){
-			return response.headers.raw()['Set-Cookie'];
-		}).then(function(response){
-			self.getleagueData();
-		}).catch(function(err){
-			console.log(self.name + " : login : " + err);
-			self.scheduleUpdate();
-		});
-
-
-	},
-
-	logout: function(){
-
-		console.log('Logout');
-		var self = this;
-
-
-		var url = 'https://users.premierleague.com/accounts/logout/?app=plfpl-web&redirect_uri=https://fantasy.premierleague.com/';
-
-		fetch(url)
-				.then(function(response){
-					console.log('Logout response code: ' + response.status);
-					return response;
-				}).then(function(response){
-						self.login();
-				}).catch(function(err){
-					console.log(self.name + " : logout : " + err);
-					self.scheduleUpdate();
-				});
-	},
-
-	getleagueData: function() {
+	getData: function() {
 		var self = this;
 
 		console.log('Fetching league data for module: ' + this.name);
@@ -171,7 +122,7 @@ module.exports = NodeHelper.create({
 
 		clearTimeout(this.updateTimer);
 		this.updateTimer = setTimeout(function() {
-			self.login();
+			self.getData();
 		}, nextLoad);
 	}
 });
