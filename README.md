@@ -2,14 +2,14 @@
 
 This is a module for the [MagicMirror²](https://github.com/MichMich/MagicMirror/).
 
-This module displays your Fantasy Premier League! 
+This module displays your Fantasy Premier League!
 Display current standings and latest points.
 
 
 
 ## Install
 #### Step 1
-Navigate into your MagicMirror modules folder and execute: 
+Navigate into your MagicMirror modules folder and execute:
 ```js
 git clone https://github.com/Wuz0ink/MMM-Fantasy-Premier-League
 ```
@@ -38,7 +38,7 @@ Add the following configuration block to the modules array in the `config/config
 
 Visit https://fantasy.premierleague.com. Enter selected league and look at the URL:
 ```js
-https://fantasy.premierleague.com/a/leagues/standings/{LEAGUE_ID}/classic
+https://fantasy.premierleague.com/leagues/{LEAGUE_ID}/standings/c
 ```
 #### Step 3
 Copy the {LEAGUE ID} and paste it in the config file under leagueIds. Example below,
@@ -52,7 +52,7 @@ leagueIds: [
 
 ![](Screenshots/Screenshot2.png)
 
-Example config: 
+Example config:
 ```js
 {
     module: 'MMM-Fantasy-Premier-League',

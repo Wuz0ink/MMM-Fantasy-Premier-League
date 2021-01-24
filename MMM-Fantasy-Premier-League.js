@@ -33,13 +33,11 @@ Module.register("MMM-Fantasy-Premier-League", {
 
 		var self = this;
 		this.leagues = [];
-		this.gameWeek = [];
 
 		this.startup = true;
 
 		//Flag for check if module is loaded
 		this.leaguesLoaded = false;
-		this.gameWeekLoaded = false;
 
 		this.sendSocketNotification("MMM-Fantasy-Premier-League-CONFIG", this.config);
 	},
@@ -59,7 +57,7 @@ Module.register("MMM-Fantasy-Premier-League", {
 			nextLoad = 10000;
 			this.startup = false;
 		}
-		
+
 		setTimeout(function() {
 			self.updateDom();
 		}, nextLoad);
@@ -69,14 +67,14 @@ Module.register("MMM-Fantasy-Premier-League", {
 		var self = this;
 
 		var wrapper = document.createElement("div");
-		
+
 		if (this.config.leagueIds.length === 0) {
 			wrapper.innerHTML = "Please set at least one leagueId to use: " + this.name + ".";
 			wrapper.className = "dimmed light small";
 			return wrapper;
 		}
 
-		if (!this.leaguesLoaded || !this.gameWeekLoaded) {
+		if (!this.leaguesLoaded) {
 			wrapper.innerHTML = "Fetching league ...";
 			wrapper.className = "dimmed light small";
 			return wrapper;
@@ -97,13 +95,13 @@ Module.register("MMM-Fantasy-Premier-League", {
 			row.appendChild(gameWeekText);
 
 			var gameWeekName = document.createElement("td");
-			if(this.gameWeek[0].finished){
-				gameWeekName.className = "GameWeek-done light";
-			}else{
-				gameWeekName.className = "GameWeek-not-done light";
-			}
-			
-			gameWeekName.innerHTML = this.gameWeek[0].name;
+//			if(this.gameWeek[0].finished){
+//				gameWeekName.className = "GameWeek-done light";
+//			}else{
+//				gameWeekName.className = "GameWeek-not-done light";
+//			}
+
+//			gameWeekName.innerHTML = this.gameWeek[0].name;
 			row.appendChild(gameWeekName);
 		}
 
@@ -257,8 +255,6 @@ Module.register("MMM-Fantasy-Premier-League", {
 			}
 
 		}
-
-
 		return wrapper;
 	},
 
@@ -266,18 +262,7 @@ Module.register("MMM-Fantasy-Premier-League", {
 		if(notification === "MMM-Fantasy-Premier-League-LEAGUE") {
 			this.leagues = payload;
 			this.leaguesLoaded = true;
-			if(this.gameWeekLoaded){
-				this.scheduleUpdate();
-			}
-			
-		}
-
-		if(notification === "MMM-Fantasy-Premier-League-GAMEWEEK") {
-			this.gameWeek = payload;
-			this.gameWeekLoaded = true;
-			if(this.leaguesLoaded){
-				this.scheduleUpdate();
-			}
+			this.scheduleUpdate();
 		}
 	},
 });

@@ -12,7 +12,7 @@ module.exports = NodeHelper.create({
 
 	start: function() {
 		console.log("Starting node_helper for module: " + this.name);
-		
+
 		this.started = false;
 	},
 
@@ -35,58 +35,33 @@ module.exports = NodeHelper.create({
 
 		for(l in this.config.leagueIds){
 			// url used to get league and team details
-			var url = "https://fantasy.premierleague.com/drf/leagues-classic-standings/" + this.config.leagueIds[l].id;
+			var url = "https://fantasy.premierleague.com/api/leagues-classic/" + this.config.leagueIds[l].id + "/standings";
+			console.log("Fetching data from: " + url);
 
-			fetch(url)
-				.then(function(response){
-					return response.json();
-				}).then(function(json){
-					self.processLeague(json);
-				}).catch(function(err){
-					console.log(self.name + " : " + err);
-					self.scheduleUpdate();
-				});
-		}
-
-		// url used to get Gameweek details
-		url = "https://fantasy.premierleague.com/drf/events";
-
-		fetch(url)
-			.then(function(response){
-				return response.json();
-			}).then(function(json){
-				self.processGameweek(json);
-			}).catch(function(err){
-				console.log(self.name + " : " + err);
-				self.scheduleUpdate();
+			var request = require('request');
+			var options = {
+				'method': 'GET',
+				'url': url,
+				'headers': {
+				}
+			};
+			request(options, function (error, response) {
+				if (error) throw new Error(error);
+				var jsonObj = JSON.parse(response.body);
+				self.processLeague(jsonObj);
 			});
-
-	},
-
-	processGameweek: function(data){
-		var gameWeek = [];
-
-		for(gw in data){
-			if(data[gw].is_current){
-				var name = data[gw].id;
-				var finished = data[gw].finished;
-				gameWeek.push({
-					name: name,
-					finished: finished
-				});
-			}
 		}
-		this.displayAndSchedule("gameweek", gameWeek);
 	},
 
 	processLeague: function(data) {
+
 
 		var leagueTeams = [];
 		var leagueName = data.league.name;
 		leagueName = this.truncate(leagueName);
 
 		var leagueId = data.league.id;
-		
+
 		for(team in data.standings.results){
 			var playerId = data.standings.results[team].id;
 			var teamName = data.standings.results[team].entry_name;
@@ -94,7 +69,7 @@ module.exports = NodeHelper.create({
 
 			var playerName = data.standings.results[team].player_name;
 			playerName = this.truncate(playerName);
-			
+
 			var rank = data.standings.results[team].rank;
 			var totalPoints = data.standings.results[team].total;
 			var gwPoints = data.standings.results[team].event_total;
@@ -135,9 +110,6 @@ module.exports = NodeHelper.create({
 			this.sendSocketNotification("MMM-Fantasy-Premier-League-LEAGUE", payload);
 		}
 
-		if(notification == "gameweek" && payload.length > 0){
-			this.sendSocketNotification("MMM-Fantasy-Premier-League-GAMEWEEK", payload);
-		}
 		this.scheduleUpdate();
 	},
 
